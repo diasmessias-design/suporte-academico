@@ -1,19 +1,26 @@
 
 import { Estudante } from "./Estudante.js";
+import type { StatusChamado } from "../tipos.js";
 
 export class Chamado {
-    #id;
-    #titulo;
-    #solicitante;
-    #responsavel;
-    #status = "ABERTO";
+    readonly #id: number;
+    readonly #titulo: string;
+    readonly #solicitante: Estudante;
 
-    constructor(id, titulo, solicitante, responsavel = null) {
+    #responsavel: string | null;
+    #status: StatusChamado = "ABERTO";
+
+    constructor(
+        id: number,
+        titulo: string,
+        solicitante: Estudante,
+        responsavel: string | null = null
+    ) {
         if (!Number.isInteger(id) || id <= 0) {
             throw new Error("ID do chamado inválido.");
         }
 
-        if (typeof titulo !== "string" || !titulo.trim()) {
+        if (!titulo.trim()) {
             throw new Error("Título do chamado inválido.");
         }
 
@@ -21,8 +28,7 @@ export class Chamado {
             throw new Error("O solicitante deve ser um estudante.");
         }
 
-        if (responsavel !== null &&
-            (typeof responsavel !== "string" || !responsavel.trim())) {
+        if (responsavel !== null && !responsavel.trim()) {
             throw new Error("Responsável inválido.");
         }
 
@@ -32,32 +38,32 @@ export class Chamado {
         this.#responsavel = responsavel;
     }
 
-    get id() {
+    get id(): number {
         return this.#id;
     }
 
-    get titulo() {
+    get titulo(): string {
         return this.#titulo;
     }
 
-    get solicitante() {
+    get solicitante(): Estudante {
         return this.#solicitante;
     }
 
-    get responsavel() {
+    get responsavel(): string | null {
         return this.#responsavel;
     }
 
-    get status() {
+    get status(): StatusChamado {
         return this.#status;
     }
 
-    iniciarAtendimento(responsavel) {
+    iniciarAtendimento(responsavel: string): void {
         if (this.#status !== "ABERTO") {
             throw new Error("O chamado não pode iniciar atendimento.");
         }
 
-        if (typeof responsavel !== "string" || !responsavel.trim()) {
+        if (!responsavel.trim()) {
             throw new Error("Responsável inválido.");
         }
 
@@ -65,7 +71,7 @@ export class Chamado {
         this.#status = "EM_ATENDIMENTO";
     }
 
-    finalizar() {
+    finalizar(): void {
         if (this.#status !== "EM_ATENDIMENTO") {
             throw new Error("O chamado não pode ser finalizado.");
         }
@@ -73,7 +79,13 @@ export class Chamado {
         this.#status = "FINALIZADO";
     }
 
-    resumo() {
+    resumo(): {
+        id: number;
+        titulo: string;
+        solicitante: string;
+        responsavel: string | null;
+        status: StatusChamado;
+    } {
         return {
             id: this.#id,
             titulo: this.#titulo,
